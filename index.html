@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birthday Card</title>
+    <!-- Google Font-->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* 礼物图片样式 */
+      .gift-image {
+        width: 200px; /* 调整为更大的尺寸 */
+        height: auto;
+      }
+
+      /* 添加祝福语图片样式 */
+      .wish-image {
+        width: 300px; /* 可以根据实际图片调整大小 */
+        height: auto;
+        margin-bottom: 20px; /* 添加一些底部间距 */
+      }
+
+      /* 飘落图片样式 */
+      .falling-image {
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        animation: fall linear infinite;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(-100px) translateX(0) rotate(0deg);
+        }
+        100% {
+          transform: translateY(100vh) translateX(100px) rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="outside">
+        <div class="front">
+          <p>Happy Birthday</p>
+          <div class="cake">
+            <div class="top-layer"></div>
+            <div class="middle-layer"></div>
+            <div class="bottom-layer"></div>
+            <div class="candle"></div>
+          </div>
+        </div>
+        <div class="back">
+          <img src="image1.jpg" class="top-left-image">
+          <img src="flower.png" class="flower-image">
+          <img src="image2.png" class="bottom-right-image">
+        </div>
+      </div>
+      <div class="inside">
+        <!-- 将文字替换为图片 -->
+        <img src="wish.png" class="wish-image">
+        <div id="gift-container">
+          <h1 id="gift">&#127873;</h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- 添加音频元素 -->
+    <audio id="birthdaySong" src="birthday-song.mp3"></audio>
+
+    <script>
+      let isPlaying = false;
+
+      function createFallingImage() {
+        const image = document.createElement('img');
+        // 随机选择四张图片中的一张
+        const randomNum = Math.random();
+        if (randomNum < 0.25) {
+            image.src = 'falling1.png';
+        } else if (randomNum < 0.5) {
+            image.src = 'falling2.png';
+        } else if (randomNum < 0.75) {
+            image.src = 'falling3.png';
+        } else {
+            image.src = 'falling4.png';
+        }
+        image.classList.add('falling-image');
+        
+        // 随机大小 (20px 到 50px)
+        const size = Math.random() * 30 + 20;
+        image.style.width = size + 'px';
+        image.style.height = 'auto';
+        
+        // 随机水平位置
+        image.style.left = Math.random() * 100 + '%';
+        
+        // 随机透明度 (0.4 到 1)
+        image.style.opacity = Math.random() * 0.6 + 0.4;
+        
+        // 随机动画时长 (3-8秒)
+        const duration = Math.random() * 5 + 3;
+        image.style.animationDuration = duration + 's';
+        
+        // 随机初始位置偏移
+        image.style.transform = `translateX(${Math.random() * 100 - 50}px)`;
+
+        document.body.appendChild(image);
+
+        // 动画结束后移除元素
+        setTimeout(() => {
+          image.remove();
+        }, duration * 1000);
+      }
+
+      document.getElementById('gift').addEventListener('click', function() {
+        if (isPlaying) return;
+        isPlaying = true;
+
+        // 播放音乐
+        const audio = document.getElementById('birthdaySong');
+        audio.play();
+
+        // 替换礼物为 HelloKitty1 图片
+        const giftContainer = document.getElementById('gift-container');
+        giftContainer.innerHTML = '<img src="HelloKitty1.png" class="gift-image">';
+
+        // 创建飘落的图片
+        setInterval(createFallingImage, 100); // 改为100ms
+        
+        // 初始创建一组密集的图片
+        for(let i = 0; i < 10; i++) { // 改为10个
+            setTimeout(() => {
+                createFallingImage();
+            }, i * 100);
+        }
+
+        // 每1秒创建一组密集的图片
+        setInterval(() => {
+            for(let i = 0; i < 5; i++) { // 改为5个
+                setTimeout(() => {
+                    createFallingImage();
+                }, i * 100);
+            }
+        }, 1000);
+
+        // 持续的礼花效果
+        setInterval(function() {
+          // 从左边发射的礼花
+          confetti({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0, y: 0.6 }
+          });
+
+          // 从右边发射的礼花
+          confetti({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1, y: 0.6 }
+          });
+
+          // 烟花样式的礼花
+          confetti({
+            particleCount: 30,
+            spread: 360,
+            startVelocity: 30,
+            gravity: 0.5,
+            origin: { x: Math.random(), y: Math.random() * 0.3 + 0.5 },
+            colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
+          });
+        }, 200);
+      });
+    </script>
+  </body>
+</html>
